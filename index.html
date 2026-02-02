@@ -402,60 +402,25 @@
     </footer>
     
     <script>
-        const galleryData = {
-            system: {
-                title: "SYSTEM - PVD Tool 設備系統",
-                images: [
-                    { label: "CST4000", desc: "字字字字串串串串", placeholder: "images/System-1.png" },
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/System-2.png" },
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/System-3.png" },
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/System-4.png" }
-                ]
-            },
-            cathode: {
-                title: "CATHODE - PVD 陰極核心組件",
-                images: [
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/SC-1.png" },
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/SC.png" },
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/SCR-1.png" },
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/SCR.png" }
-                ]
-            },            
-            alloy: {
-                title: "ALLOY FILM - 合金薄膜開發",
-                images: [
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/Alloy-1.png" },
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/Alloy-2.png" },
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/Alloy-3.png" },
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/Alloy-4.png" }
-                ]
-            },
-            project: {
-                title: "PROJECT - 專案技術服務",
-                images: [
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/Project_Serv.png" },
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/Project_Tech.png" }
-                ]
-            },
-            ucsm: {
-                title: "UCSM - 靶材表面處理技術",
-                images: [
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/UCSM-1.png" },
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/UCSM-2.png" },
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/UCSM-3.png" },
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/UCSM-4.png" }
-                ]
-            },
-            stc: {
-                title: "STC - 靶材特性驗證平台",
-                images: [
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/STC-1.png" },
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/STC-2.png" },
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/STC-3.png" },
-                    { label: "---", desc: "字字字字串串串串", placeholder: "images/STC-4.png" }
-                ]
+        // 從 JSON 檔案載入圖庫資料
+        let galleryData = {};
+
+        // 頁面載入時讀取 JSON 資料
+        async function loadGalleryData() {
+            try {
+                const response = await fetch('gallery-data.json');
+                if (!response.ok) throw new Error('無法載入圖庫資料');
+                galleryData = await response.json();
+                console.log('✅ 圖庫資料載入成功');
+            } catch (error) {
+                console.error('❌ 載入圖庫資料失敗:', error);
+                // 如果載入失敗，使用預設空資料
+                galleryData = {};
             }
-        };
+        }
+
+        // 初始化：載入資料
+        loadGalleryData();
 
         function openGallery(key) {
             const data = galleryData[key];
@@ -472,7 +437,7 @@
                 
                 div.innerHTML = `
                     <div class="aspect-video bg-slate-900 rounded-xl mb-4 flex items-center justify-center border border-dashed border-white/20 overflow-hidden">
-                        <img src="${img.placeholder}" alt="${img.label}" class="w-full h-full object-cover" 
+                        <img src="${img.path}" alt="${img.label}" class="w-full h-full object-cover" 
                              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                         <div class="text-center hidden flex-col items-center justify-center">
                             <span class="text-4xl">📷</span>
