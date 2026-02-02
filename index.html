@@ -471,18 +471,14 @@
                 const div = document.createElement('div');
                 div.className = "bg-slate-800/50 p-6 rounded-2xl border border-white/5";
                 
-                // 檢查是否有實際的圖片 (http URL 或 base64)
-                const isRealImage = img.placeholder && (img.placeholder.startsWith('http') || img.placeholder.startsWith('data:image/'));
-                
                 div.innerHTML = `
                     <div class="aspect-video bg-slate-900 rounded-xl mb-4 flex items-center justify-center border border-dashed border-white/20 overflow-hidden">
-                        ${isRealImage ? 
-                            `<img src="${img.placeholder}" alt="${img.label}" class="w-full h-full object-contain">` :
-                            `<div class="text-center">
-                                <span class="text-4xl">📷</span>
-                                <p class="text-[10px] text-slate-500 mt-2 uppercase tracking-widest">${img.placeholder}</p>
-                            </div>`
-                        }
+                        <img src="${img.placeholder}" alt="${img.label}" class="w-full h-full object-contain" 
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="text-center hidden flex-col items-center justify-center">
+                            <span class="text-4xl">📷</span>
+                            <p class="text-[10px] text-slate-500 mt-2 uppercase tracking-widest">圖片載入失敗</p>
+                        </div>
                     </div>
                     <h4 class="font-bold text-white mb-1">${img.label}</h4>
                     <p class="text-sm text-slate-400">${img.desc}</p>
