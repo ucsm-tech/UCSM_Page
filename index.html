@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>見微科技 UCSM Technology - 網頁版簡介</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #0a0e17;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* 六角形基礎容器 - 調整為 2x3 佈局 */
+        .hex-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .hexagon-wrapper {
+            position: relative;
+            width: 100%;
+            padding-bottom: 115.47%;
+            cursor: pointer;
+            --theme-color: #38bdf8; 
+        }
+
+        .hexagon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* 亮燈邏輯 */
+        .hexagon-wrapper:hover .hexagon {
+            background: color-mix(in srgb, var(--theme-color) 20%, transparent);
+            box-shadow: 0 0 50px color-mix(in srgb, var(--theme-color) 40%, transparent);
+            transform: scale(1.1);
+            z-index: 10;
+        }
+
+        .hex-title {
+            font-weight: 900;
+            font-size: 1.4rem;
+            color: #64748b;
+            letter-spacing: 0.12em;
+            transition: all 0.3s ease;
+        }
+
+        .hexagon-wrapper:hover .hex-title {
+            color: var(--theme-color);
+            text-shadow: 0 0 15px color-mix(in srgb, var(--theme-color) 60%, transparent);
+        }
+
+        .hex-subtitle {
+            font-size: 0.75rem;
+            color: #475569;
+            margin-top: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+        }
+
+        /* 懸浮說明 */
+        .hex-desc {
+            position: absolute;
+            bottom: -90px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 280px;
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            border-bottom: 4px solid var(--theme-color);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+            z-index: 100;
+            pointer-events: none;
+            line-height: 1.6;
+        }
+
+        .hexagon-wrapper:hover .hex-desc {
+            opacity: 1;
+            visibility: visible;
+            bottom: -70px;
+        }
+
+        /* 各區塊顏色 */
+        .color-system { --theme-color: #eab308; }
+        .color-cathode { --theme-color: #818cf8; }
+        .color-alloy { --theme-color: #f59e0b; }
+        .color-project { --theme-color: #f43f5e; }
+        .color-ucsm { --theme-color: #22c55e; }
+        .color-stc { --theme-color: #06b6d4; }
+
+        /* Modal 樣式 */
+        #imageModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #111827;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 100px rgba(56, 189, 248, 0.1);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* 響應式佈局 */
+        @media (max-width: 768px) {
+            .hex-container { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+            .hex-desc { width: 240px; font-size: 0.8rem; }
+            .hex-title { font-size: 1.1rem; }
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -9px;
+            top: 5px;
+            width: 18px;
+            height: 18px;
+            background: #38bdf8;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #38bdf8;
+        }
+    </style>
+</head>
+<body class="pb-20">
+
+    <!-- Header Section -->
+    <header class="relative py-28 px-6 text-center overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+            <div class="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-600 rounded-full blur-[180px]"></div>
+        </div>
+        
+        <div class="relative z-10">
+            <h1 class="text-4xl md:text-6xl font-bold tracking-[0.2em] mb-4">見微科技公司簡介</h1>
+            <p class="text-xl md:text-2xl text-blue-400 font-light tracking-[0.15em] mb-10">UCSM Technology Corporation</p>
+            <div class="inline-flex items-center px-6 py-2 border border-blue-500/20 bg-blue-500/5 rounded-full text-xs text-blue-300 font-mono">
+                <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse mr-3"></span>
+                VERSION 2026.01.27
+            </div>
+        </div>
+    </header>
+
+    <!-- Company Vision -->
+    <section class="max-w-4xl mx-auto px-6 mb-32">
+        <div class="bg-slate-900/60 border border-white/5 rounded-[40px] p-10 md:p-16 backdrop-blur-xl shadow-2xl relative">
+            <h2 class="text-3xl font-bold mb-8 flex items-center">
+                <span class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center mr-4 text-white text-lg font-black shadow-lg shadow-blue-500/20">願</span>
+                企業願景
+            </h2>
+            <p class="leading-relaxed text-xl text-slate-300 font-light italic">
+                見微科技以<span class="text-blue-400 font-bold not-italic">先進等離子體技術</span>與創新濺鍍設備為本，致力於高效濺鍍源磁場設計、合金成分薄膜開發、精密靶材濺鍍檢測及超潔淨靶材表面加工，實現濺鍍產業全方位服務。
+            </p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-10 mt-14">
+                <div class="border-l-2 border-blue-500/30 pl-6">
+                    <div class="text-3xl font-black text-white">2017</div>
+                    <div class="text-[10px] text-slate-500 mt-2 tracking-widest uppercase">Company Founded</div>
+                </div>
+                <div class="border-l-2 border-blue-500/30 pl-6">
+                    <div class="text-lg font-bold text-slate-200 leading-snug">
+                        羅尚賢 (Alex Rou)<br>
+                        蔡孟宏 (Meng Hung Tsai)
+                    </div>
+                    <div class="text-[10px] text-slate-500 mt-2 tracking-widest uppercase">Founders</div>
+                </div>
+                <div class="border-l-2 border-blue-500/30 pl-6 col-span-2 md:col-span-1">
+                    <div class="text-xl font-bold text-slate-200">國科會資安大樓</div>
+                    <div class="text-[10px] text-slate-500 mt-2 tracking-widest uppercase">Current Location</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive 6-Hexagon Section -->
+    <section class="py-20 px-6 bg-slate-900/10">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-black mb-4 tracking-widest text-white">六大技術服務模塊</h2>
+            <div class="w-24 h-1 bg-blue-500 mx-auto rounded-full"></div>
+            <p class="text-slate-500 text-sm mt-6 italic">點擊模塊查看相關產品照片</p>
+        </div>
+
+        <div class="hex-container">
+            <!-- 1. System -->
+            <div class="hexagon-wrapper color-system" onclick="openGallery('system')">
+                <div class="hexagon">
+                    <div class="hex-title">SYSTEM</div>
+                    <div class="hex-subtitle">PVD Tool</div>
+                </div>
+                <div class="hex-desc">
+                    <strong class="text-yellow-500">PVD Tool 設備解決方案</strong><br>
+                    • CST-4000/8000 自動化系統<br>
+                    • Co-sputtering 實驗型設備<br>
+                    • 點擊查看設備實機圖
+                </div>
+            </div>
+
+            <!-- 2. Cathode -->
+            <div class="hexagon-wrapper color-cathode" onclick="openGallery('cathode')">
+                <div class="hexagon">
+                    <div class="hex-title">CATHODE</div>
+                    <div class="hex-subtitle">Core Component</div>
+                </div>
+                <div class="hex-desc">
+                    <strong class="text-indigo-400">PVD 陰極核心組件</strong><br>
+                    • SCR / SC Cathode 實體照片<br>
+                    • 磁場設計與電漿交互作用圖<br>
+                    • 點擊查看組件圖庫
+                </div>
+            </div>
+
+            <!-- 3. Alloy Film -->
+            <div class="hexagon-wrapper color-alloy" onclick="openGallery('alloy')">
+                <div class="hexagon">
+                    <div class="hex-title">ALLOY FILM</div>
+                    <div class="hex-subtitle">Thin Film</div>
+                </div>
+                <div class="hex-desc">
+                    <strong class="text-amber-500">合金薄膜開發</strong><br>
+                    • 功能性薄膜樣品照片<br>
+                    • XRF 標準品開發實績<br>
+                    • 點擊查看薄膜與樣品圖
+                </div>
+            </div>
+
+            <!-- 4. Project -->
+            <div class="hexagon-wrapper color-project" onclick="openGallery('project')">
+                <div class="hexagon">
+                    <div class="hex-title">PROJECT</div>
+                    <div class="hex-subtitle">Service</div>
+                </div>
+                <div class="hex-desc">
+                    <strong class="text-rose-500">專案計畫</strong><br>
+                    • 合作開發與技術轉移實績<br>
+                    • 政府計畫結案成果照片<br>
+                    • 點擊查看專案內容
+                </div>
+            </div>
+
+            <!-- 5. UCSM -->
+            <div class="hexagon-wrapper color-ucsm" onclick="openGallery('ucsm')">
+                <div class="hexagon">
+                    <div class="hex-title">UCSM</div>
+                    <div class="hex-subtitle">Sputtering Tech</div>
+                </div>
+                <div class="hex-desc">
+                    <strong class="text-green-500">獨家靶材處理</strong><br>
+                    • 靶材表面加工前後對比圖<br>
+                    • SEM 微觀表面分析<br>
+                    • 點擊查看處理效果
+                </div>
+            </div>
+
+            <!-- 6. STC -->
+            <div class="hexagon-wrapper color-stc" onclick="openGallery('stc')">
+                <div class="hexagon">
+                    <div class="hex-title">STC</div>
+                    <div class="hex-subtitle">Target Character</div>
+                </div>
+                <div class="hex-desc">
+                    <strong class="text-cyan-400">靶材驗證服務</strong><br>
+                    • STC Tool 檢測設備照片<br>
+                    • 電漿點火與分析數據圖<br>
+                    • 點擊查看驗證平台實體
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Gallery -->
+    <div id="imageModal" onclick="closeGallery()">
+        <span class="close-btn">&times;</span>
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="p-8">
+                <h3 id="modalTitle" class="text-2xl font-bold mb-6 border-b border-white/10 pb-4"></h3>
+                <div id="imageContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <!-- 動態載入內容 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timeline (完整補齊) -->
+    <section class="max-w-4xl mx-auto px-6 py-32">
+        <h2 class="text-3xl font-bold mb-16 border-l-8 border-blue-600 pl-6 tracking-widest">發展里程碑</h2>
+        <div class="relative border-l-2 border-slate-800 ml-3 space-y-12">
+            <div class="timeline-item relative pl-10">
+                <div class="text-blue-400 font-mono text-sm mb-1 uppercase tracking-tighter">2017/08</div>
+                <div class="text-xl font-bold text-white">進駐經濟部南臺灣創新園區</div>
+            </div>
+            <div class="timeline-item relative pl-10">
+                <div class="text-blue-400 font-mono text-sm mb-1 uppercase tracking-tighter">2018/12</div>
+                <div class="text-xl font-bold text-white">行政院國發局 [天使創業計畫] _ UCSM Prototype</div>
+            </div>
+            <div class="timeline-item relative pl-10">
+                <div class="text-blue-400 font-mono text-sm mb-1 uppercase tracking-tighter">2019/08</div>
+                <div class="text-xl font-bold text-white">台南市地方產業創新研發計畫 _ UCSM 導入 HDD 產業</div>
+            </div>
+            <div class="timeline-item relative pl-10">
+                <div class="text-blue-400 font-mono text-sm mb-1 uppercase tracking-tighter">2020/10</div>
+                <div class="text-xl font-bold text-green-400 flex items-center">
+                    <span class="mr-2">🏆</span> 獲獎台南地方產業創新研發計畫優良廠商
+                </div>
+            </div>
+            <div class="timeline-item relative pl-10">
+                <div class="text-blue-400 font-mono text-sm mb-1 uppercase tracking-tighter">2021/06</div>
+                <div class="text-xl font-bold text-white">取得經濟部 [小型企業創新研發計畫] _ SEMI 靶材驗證</div>
+            </div>
+            <div class="timeline-item relative pl-10">
+                <div class="text-blue-400 font-mono text-sm mb-1 uppercase tracking-tighter">2022/10</div>
+                <div class="text-xl font-bold text-white">設立見微薄膜中心 _ 功能性薄膜開發</div>
+            </div>
+            <div class="timeline-item relative pl-10">
+                <div class="text-blue-400 font-mono text-sm mb-1 uppercase tracking-tighter">2023/09</div>
+                <div class="text-xl font-bold text-white">台南市地方產業創新研發計畫 _ XRF 薄膜標準品開發</div>
+            </div>
+            <div class="timeline-item relative pl-10">
+                <div class="text-blue-400 font-mono text-sm mb-1 uppercase tracking-tighter">2025/01</div>
+                <div class="text-xl font-black text-blue-400">見微科技薄膜中心進駐國科會資安暨智慧科技研發大樓</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Footer -->
+    <footer class="bg-slate-950 border-t border-white/5 pt-24 pb-16 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-20 gap-8">
+                <div class="text-center md:text-left">
+                    <div class="text-3xl font-black italic tracking-tighter text-blue-600">UCSM TECHNOLOGY</div>
+                    <p class="text-slate-500 text-[10px] mt-2 tracking-[0.4em] uppercase">Advanced Sputtering Solutions</p>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-10 bg-slate-900/30 p-12 rounded-[32px] border border-white/5">
+                <div>
+                    <div class="text-blue-400 font-black text-lg mb-4">羅尚賢 Alex S Rou</div>
+                    <div class="space-y-2 text-sm text-slate-400 font-light">
+                        <p>SH.Rou@ucsm.com.tw</p>
+                        <p>0916-505-008 (Taiwan)</p>
+                        <p>510-565-8012 (USA)</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-blue-400 font-black text-lg mb-4">蔡孟宏 Meng Hung Tsai</div>
+                    <div class="space-y-2 text-sm text-slate-400 font-light">
+                        <p>mh.tsai@ucsm.com.tw</p>
+                        <p>0973-290-907 (Taiwan)</p>
+                        <p>06-3842805 (Office)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        const galleryData = {
+            system: {
+                title: "SYSTEM - PVD Tool 設備系統",
+                images: [
+                    { label: "CST4000", desc: "核心組件，應用於高效能濺鍍", placeholder: "https://raw.githubusercontent.com/ucsm-tech/UCSM_Page/refs/heads/main/UCSM%20Demo%20page/images/SC.png" }
+                ]
+            },
+            cathode: {
+                title: "CATHODE - PVD 陰極核心組件",
+                images: [
+                    { label: "SCR Cathode", desc: "核心組件，應用於高效能濺鍍", placeholder: "CATHODE_SCR" }
+                ]
+            },            
+            alloy: {
+                title: "ALLOY FILM - 合金薄膜開發",
+                images: [
+                    { label: "Functional Thin Film", desc: "合金成分比例開發樣品", placeholder: "ALLOY_WAFER" },
+                    { label: "Open-Source Lab", desc: "功能性薄膜開發環境", placeholder: "ALLOY_LAB" }
+                ]
+            },
+            project: {
+                title: "PROJECT - 專案技術服務",
+                images: [
+                    { label: "Technical Service Contract", desc: "年度技術服務合約執行成果", placeholder: "PROJECT_SERV" },
+                    { label: "New Tech Cooperation", desc: "新技術合作與研發成果", placeholder: "PROJECT_TECH" }
+                ]
+            },
+            ucsm: {
+                title: "UCSM - 靶材表面處理技術",
+                images: [
+                    { label: "Surface Machining Before/After", desc: "靶材表面受損層移除對比", placeholder: "UCSM_BEFORE" },
+                    { label: "Particle Reduction Analysis", desc: "表面加工後顯著提升良率", placeholder: "UCSM_AFTER" }
+                ]
+            },
+            stc: {
+                title: "STC - 靶材特性驗證平台",
+                images: [
+                    { label: "STC Tool 檢測設備", desc: "18吋大型靶材驗證平台", placeholder: "STC_TOOL" },
+                    { label: "Ignition Analysis", desc: "電漿點火與 I-V 特性分析", placeholder: "STC_PLASMA" }
+                ]
+            }
+        };
+
+        function openGallery(key) {
+            const data = galleryData[key];
+            const modal = document.getElementById('imageModal');
+            const title = document.getElementById('modalTitle');
+            const container = document.getElementById('imageContainer');
+            
+            title.innerText = data.title;
+            container.innerHTML = '';
+
+            data.images.forEach(img => {
+                const div = document.createElement('div');
+                div.className = "bg-slate-800/50 p-6 rounded-2xl border border-white/5";
+                
+                // 檢查是否有實際的圖片 (http URL 或 base64)
+                const isRealImage = img.placeholder && (img.placeholder.startsWith('http') || img.placeholder.startsWith('data:image/'));
+                
+                div.innerHTML = `
+                    <div class="aspect-video bg-slate-900 rounded-xl mb-4 flex items-center justify-center border border-dashed border-white/20 overflow-hidden">
+                        ${isRealImage ? 
+                            `<img src="${img.placeholder}" alt="${img.label}" class="w-full h-full object-contain">` :
+                            `<div class="text-center">
+                                <span class="text-4xl">📷</span>
+                                <p class="text-[10px] text-slate-500 mt-2 uppercase tracking-widest">${img.placeholder}</p>
+                            </div>`
+                        }
+                    </div>
+                    <h4 class="font-bold text-white mb-1">${img.label}</h4>
+                    <p class="text-sm text-slate-400">${img.desc}</p>
+                `;
+                container.appendChild(div);
+            });
+
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeGallery() {
+            document.getElementById('imageModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    </script>
+</body>
+</html>
